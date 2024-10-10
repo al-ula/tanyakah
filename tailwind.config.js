@@ -1,9 +1,12 @@
 /** @type {import('tailwindcss').Config} */
+import daisyui from "daisyui";
+import typography from "@tailwindcss/typography";
+
 module.exports = {
-  content: [],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
+    content: ["./components/**/*.{html,hbs}"],
+    theme: {
+        extend: {},
+    },
+    plugins: [typography, daisyui],
 }
 

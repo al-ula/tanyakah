@@ -1,0 +1,65 @@
+<div class="mx-auto w-96 mb-2">
+    <article class="prose text-center"><h3>Bagikan pada teman-temanmu!</h3></article>
+</div>
+<div class="flex shadow-sm gap-4 w-96 mx-auto">
+    <div class="w-full">
+        <input
+                value="https://url"
+                readonly=""
+                class="indent-2 input input-bordered input-md w-full max-w-xs"
+                name="text"
+                type="text"
+        />
+    </div>
+
+    <button class="btn btn-primary text-white justify-center items-center">
+        <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                class="pointer-events-none"
+        >
+            <rect width="24" height="24"></rect>
+            <rect
+                    x="4"
+                    y="8"
+                    width="12"
+                    height="12"
+                    rx="1"
+                    stroke="#000000"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+            ></rect>
+            <path
+                    d="M8 6V5C8 4.44772 8.44772 4 9 4H19C19.5523 4 20 4.44772 20 5V15C20 15.5523 19.5523 16 19 16H18"
+                    stroke="#000000"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-dasharray="2 2"
+            ></path>
+        </svg>
+    </button>
+</div>
+{{#if messages}}
+    {{#each messages}}
+        {{> message_list message=this.message reply=this.reply }}
+    {{/each}}
+{{else}}
+    <div role="alert" class="alert alert-warning w-96 mx-auto mt-4">
+        <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 shrink-0 stroke-current"
+                fill="none"
+                viewBox="0 0 24 24">
+            <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <span>Such empty :(</span>
+    </div>
+{{/if}}
+
