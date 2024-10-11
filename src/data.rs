@@ -1,53 +1,53 @@
 use ulid::Ulid;
 
 pub struct Board {
-    board_id: Ulid,
-    user_id: Ulid,
-    messages: Vec<Message>,
+    pub user_id: Ulid,
+    pub board_id: Ulid,
+    pub user_name: String,
 }
 
 impl Board {
-    pub fn new(board_id: Ulid, user_id: Ulid, messages: Vec<Message>) -> Self {
+    pub fn new(user_id: Ulid, user_name: String) -> Self {
         Self {
-            board_id,
             user_id,
-            messages,
+            board_id: Ulid::new(),
+            user_name
         }
     }
 }
 
 pub struct Message {
-    id: Ulid,
-    message: String,
-    replies: Vec<String>,
+    pub message_id: Ulid,
+    pub board_id: Ulid,
+    pub content: String,
 }
 
 impl Message {
-    pub fn new(id: Ulid, message: String, replies: Vec<String>) -> Self {
+    pub fn new(board_id: Ulid, content: String) -> Self {
         Self {
-            id,
-            message,
-            replies,
+            message_id: Ulid::new(),
+            board_id,
+            content
         }
     }
 }
 
-pub struct Boards {
-    pub user_id: Ulid,
-    pub board_id: Ulid,
-}
-
-pub struct Messages {
-    pub board_id: Ulid,
-    pub message: MessageEntry,
-}
-
-pub struct MessageEntry {
-    pub id: Ulid,
-    pub message: String,
-}
-
-pub struct Replies {
+pub struct Reply {
+    pub reply_id: Ulid,
     pub message_id: Ulid,
-    pub reply: String,
+    pub content: String,
+}
+
+impl Reply {
+    pub fn new(message_id: Ulid, content: String) -> Self {
+        Self {
+            reply_id: Ulid::new(),
+            message_id,
+            content
+        }
+    }
+}
+
+pub fn register(user_name: String) -> Board {
+    Board::new(Ulid::new(), user_name)
 }

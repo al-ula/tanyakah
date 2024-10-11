@@ -22,5 +22,8 @@ pub fn initialize_db(path: PathBuf) -> Result<(), redb::Error> {
 }
 
 const BOARDS: TableDefinition<u128, &[u8]> = TableDefinition::new("boards");
-const MESSAGES: MultimapTableDefinition<u128, &[u8]> = MultimapTableDefinition::new("messages");
-const REPLIES: MultimapTableDefinition<u128, String> = MultimapTableDefinition::new("replies");
+const BOARDS_BY_USER: MultimapTableDefinition<u128, u128> = MultimapTableDefinition::new("boards_by_user");
+const MESSAGES: TableDefinition<u128, &[u8]> = TableDefinition::new("messages");
+const MESSAGES_BY_BOARD: MultimapTableDefinition<u128, u128> = MultimapTableDefinition::new("messages_by_board");
+const REPLIES: TableDefinition<u128, &[u8]> = TableDefinition::new("replies");
+const REPLIES_BY_MESSAGE: MultimapTableDefinition<u128, u128> = MultimapTableDefinition::new("replies_by_message");
