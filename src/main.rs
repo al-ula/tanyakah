@@ -17,6 +17,7 @@ async fn main() {
         .get(routes::index)
         .push(Router::with_path("daftar").get(routes::register).post(routes::htmx::register_post))
         .push(Router::with_path("papan").get(routes::board))
+        .push(Router::with_path("lihat_papan").get(routes::board_other))
         .push(Router::with_path("pesan").get(routes::message))
         .push(
             Router::with_path("assets")

@@ -47,7 +47,8 @@ pub async fn board(response: &mut Response) {
     let components = HashMap::from([
         ("papan".to_string(), render::get_component("main_layout")),
         ("content".to_string(), render::get_component("board")),
-        ("message_list".to_string(), render::get_component("message")),
+        ("message_list".to_string(), render::get_component("message_list")),
+        ("message".to_string(), render::get_component("message")),
         ("reply".to_string(), render::get_component("message_reply")),
     ]);
     let page = render::render_layout(
@@ -69,7 +70,8 @@ pub async fn board(response: &mut Response) {
 pub async fn message(response: &mut Response) {
     let components = HashMap::from([
         ("pesan".to_string(), render::get_component("main_layout")),
-        ("content".to_string(), render::get_component("message")),
+        ("content".to_string(), render::get_component("message_view")),
+        ("message".to_string(), render::get_component("message")),
         ("reply".to_string(), render::get_component("message_reply")),
     ]);
     let page = render::render_layout(
@@ -78,8 +80,31 @@ pub async fn message(response: &mut Response) {
         &json!({
             "site": "Tanyakah",
             "title": "Papan Pesan Rahasia",
-            "reply": [
-                "pesan"
+            "message": "pesan",
+            "reply": ["asdf", "sdafsdf"]
+        }),
+    )
+        .await;
+    response.render(Text::Html(page));
+}
+
+#[handler]
+pub async fn board_other(response: &mut Response) {
+    let components = HashMap::from([
+        ("papan".to_string(), render::get_component("main_layout")),
+        ("content".to_string(), render::get_component("board_other")),
+        ("message_list".to_string(), render::get_component("message_list")),
+        ("message".to_string(), render::get_component("message")),
+        ("reply".to_string(), render::get_component("message_reply")),
+    ]);
+    let page = render::render_layout(
+        "papan",
+        components,
+        &json!({
+            "site": "Tanyakah",
+            "title": "Papan Pesan Rahasia",
+            "messages": [
+                {"message": "papan", "reply": ["asdf", "sdafsdf"]}
             ]
         }),
     )

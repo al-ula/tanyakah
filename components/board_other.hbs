@@ -1,23 +1,19 @@
+<div class="mx-auto w-96 mt-4 mb-4">
+    <article class="prose text-center"><h3>Papan pesan {{board_name}}</h3></article>
+</div>
+
 <div id="{{message_id}}" class="message flex flex-col gap-2 w-96 mx-auto mt-4">
     <div class="card bg-neutral text-neutral-content w-96">
         <div class="card-body items-start text-center">
-            <div class="card bg-base-100 w-full shadow-xl">
-                <div class="card-body text-left">
-                    {{message}}
-                </div>
+            <div class="mx-auto w-full">
+                <article class="prose text-center"><h4>{{board_name}} tidak akan tahu siapa yang memberi pesan.</h4></article>
             </div>
-            {{#each reply}}
-                {{> reply reply=this}}
-            {{/each}}
-            {{#if message_list}}
-            <div class="divider divider-accent text-accent"><button class="btn btn-sm btn-ghost" onclick="window.location.href='/{{board_id}}/{{message_id}}'">Buka</button></div>
-            {{/if}}
             <div class="w-full flex flex-row gap-1 mt-4">
                 <input
                         type="text"
-                        placeholder="Balas"
-                        class="input input-sm w-full max-w-xs"/>
-                <button class="btn btn-neutral btn-sm">
+                        placeholder="Kirimkan pesan"
+                        class="input input-md w-full max-w-xs"/>
+                <button class="btn btn-neutral btn-md">
                     <svg
                             class="w-5 h-5 stroke-accent"
                             stroke="currentColor"
@@ -37,3 +33,5 @@
         </div>
     </div>
 </div>
+
+{{> message_list}}
