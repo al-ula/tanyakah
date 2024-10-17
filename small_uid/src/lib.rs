@@ -35,9 +35,6 @@ impl SmallUid {
         let timestamp = timestamp_gen()?;
         compose(timestamp, random)
     }
-    fn to_string(&self) -> String {
-        base64_url::encode(&self.0.to_be_bytes())
-    }
 }
 
 impl From<u64> for SmallUid {
@@ -75,7 +72,8 @@ impl From<SmallUid> for u64 {
 
 impl Display for SmallUid {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.to_string())
+        let smalluid = base64_url::encode(&self.0.to_be_bytes());
+        write!(f, "{}", smalluid)
     }
 }
 

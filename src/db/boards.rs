@@ -3,7 +3,7 @@ use crate::data::BoardDB;
 use bincode::serialize;
 use redb::MultimapValue;
 
-pub fn check_board_id(board_id: u64) -> Result<(), redb::Error> {
+pub fn check_board(board_id: u64) -> Result<(), redb::Error> {
     let db = DB.get().unwrap().db.clone();
     let read_txn = db.begin_read()?;
     let table = read_txn.open_table(BOARDS)?;
@@ -14,7 +14,7 @@ pub fn check_board_id(board_id: u64) -> Result<(), redb::Error> {
 pub fn insert_board(board: BoardDB) -> Result<(), redb::Error> {
     let user: u64 = board.user.into();
     let id: u64 = board.id.into();
-    check_board_id(id)?;
+    check_board(id)?;
     let data: &[u8] = &serialize(&board).unwrap();
     let db = DB.get().unwrap().db.clone();
     let write_txn = db.begin_write()?;
@@ -38,7 +38,7 @@ pub fn get_board(board_id: u64) -> Result<BoardDB, redb::Error> {
     Ok(board)
 }
 
-pub fn get_board_id_by_user(user_id: u64) -> Result<Vec<u64>, redb::Error> {
+pub fn get_boards_list(user_id: u64) -> Result<Vec<u64>, redb::Error> {
     let db = DB.get().unwrap().db.clone();
     let read_txn = db.begin_read()?;
     let table = read_txn.open_multimap_table(BOARDS_BY_USER)?;
@@ -51,10 +51,10 @@ pub fn get_board_id_by_user(user_id: u64) -> Result<Vec<u64>, redb::Error> {
     Ok(vec)
 }
 
-pub fn get_boards_by_user(user_id: u64) -> Result<Vec<BoardDB>, redb::Error> {
-    let board_ids = get_board_id_by_user(user_id)?;
+pub fn get_boards(user_id: u64) -> Result<Vec<BoardDB>, redb::Error> {
+    let board_list = get_boards_list(user_id)?;
     let mut vec = Vec::new();
-    for board_id in board_ids {
+    for board_id in board_list {
         let board = get_board(board_id)?;
         vec.push(board);
     }

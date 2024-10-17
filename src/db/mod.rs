@@ -1,7 +1,8 @@
 mod boards;
 mod messages;
+mod replies;
 
-use redb::{Database, MultimapTableDefinition, MultimapValue, TableDefinition};
+use redb::{Database, MultimapTableDefinition, TableDefinition};
 use std::path::PathBuf;
 use std::sync::{Arc, OnceLock};
 
@@ -33,3 +34,5 @@ pub const MESSAGES_BY_BOARD: MultimapTableDefinition<u64, u64> =
 pub const REPLIES: TableDefinition<u64, &[u8]> = TableDefinition::new("replies");
 pub const REPLIES_BY_MESSAGE: MultimapTableDefinition<u64, u64> =
     MultimapTableDefinition::new("replies_by_message");
+
+

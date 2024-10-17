@@ -44,3 +44,177 @@ pub struct ReplyDB {
     pub id: SmallUid,
     pub reply: String,
 }
+
+impl Reply {
+    pub fn compose(message_id: String, id: String, reply: String) -> Self {
+        Reply {
+            message_id,
+            id,
+            reply,
+        }
+    }
+}
+
+impl From<Reply> for ReplyDB {
+    fn from(value: Reply) -> Self {
+        let message_id: SmallUid = value.message_id.try_into().unwrap();
+        let id: SmallUid = value.id.try_into().unwrap();
+        ReplyDB {
+            message_id,
+            id,
+            reply: value.reply,
+        }
+    }
+}
+
+impl ReplyDB {
+    pub fn compose(message_id: SmallUid, id: SmallUid, reply: String) -> Self {
+        ReplyDB {
+            message_id,
+            id,
+            reply,
+        }
+    }
+    pub fn new(message_id: SmallUid, reply: String) -> Self {
+        let id = SmallUid::new().unwrap();
+        ReplyDB {
+            message_id,
+            id,
+            reply,
+        }
+    }
+}
+
+impl From<ReplyDB> for Reply {
+    fn from(value: ReplyDB) -> Self {
+        let message_id: String = value.message_id.into();
+        let id: String = value.id.into();
+        Reply {
+            message_id,
+            id,
+            reply: value.reply,
+        }
+    }
+}
+
+impl Message {
+    pub fn new(board_id: String, message: String, reply: Vec<Reply>) -> Self {
+        Self {
+            board_id,
+            id: String::from(SmallUid::new().unwrap()),
+            message,
+            reply,
+        }
+    } 
+
+    pub fn compose(board_id: String, id: String, message: String, reply: Vec<Reply>) -> Self {
+        Self {
+            board_id,
+            id,
+            message,
+            reply,
+        }
+    }
+}
+
+impl From<Message> for MessageDB {
+    fn from(value: Message) -> Self {
+        let board_id: SmallUid = value.board_id.try_into().unwrap();
+        let id: SmallUid = value.id.try_into().unwrap();
+        MessageDB {
+            board_id,
+            id,
+            message: value.message,
+        }
+    }
+}
+
+impl MessageDB {
+    pub fn to_message(&self, replies: Vec<ReplyDB>) -> Message {
+        let replies = replies.into_iter().map(Reply::from).collect();
+        Message {
+            board_id: self.board_id.into(),
+            id: self.id.into(),
+            message: self.message.clone(),
+            reply: replies,
+        }
+    }
+    
+    pub fn new(board_id: SmallUid, message: String) -> Self {
+        let id = SmallUid::new().unwrap();
+        MessageDB {
+            board_id,
+            id,
+            message,
+        }
+    }
+    
+    pub fn compose(board_id: SmallUid, id: SmallUid, message: String) -> Self {
+        MessageDB {
+            board_id,
+            id,
+            message,
+        }
+    }
+}
+
+impl Board {
+    pub fn new(name: String, messages: Vec<Message>) -> Self {
+        Self {
+            user: String::from(SmallUid::new().unwrap()),
+            id: String::from(SmallUid::new().unwrap()),
+            name,
+            messages,
+        }
+    }
+    
+    pub fn compose(user: String, name: String, id: String, messages: Vec<Message>) -> Self {
+        Self {
+            user,
+            id,
+            name,
+            messages,
+        }
+    }
+}
+
+impl From<Board> for BoardDB {
+    fn from(value: Board) -> Self {
+        let user: SmallUid = value.user.try_into().unwrap();
+        let id: SmallUid = value.id.try_into().unwrap();
+        BoardDB {
+            user,
+            id,
+            name: value.name,
+        }
+    }
+}
+
+impl BoardDB {
+    pub fn new(name: String) -> Self {
+        let user = SmallUid::new().unwrap();
+        let id = SmallUid::new().unwrap();
+        BoardDB {
+            user,
+            id,
+            name,
+        }
+    }
+    
+    pub fn compose(user: SmallUid, id: SmallUid, name: String) -> Self {
+        BoardDB {
+            user,
+            id,
+            name,
+        }
+    }
+    
+    pub fn to_board(&self, messages: Vec<Message>) -> Board {
+        Board {
+            user: self.user.into(),
+            id: self.id.into(),
+            name: self.name.clone(),
+            messages,
+        }
+    }
+}
