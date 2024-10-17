@@ -3,7 +3,7 @@ use eyre::{eyre, Report, Result, WrapErr};
 use salvo::prelude::*;
 use salvo::serve_static::StaticDir;
 use std::path::PathBuf;
-use tracing::info;
+use tracing::{info, warn};
 
 mod data;
 mod db;
@@ -17,26 +17,27 @@ async fn main() -> Result<(), Report> {
     // reset db on debug
     #[cfg(debug_assertions)]
     {
+        let smalluid = small_uid::SmallUid::new()?;
+        info!("SmallUid: {}", smalluid);
         use tokio::signal::unix::{signal, SignalKind};
         let mut stream = signal(SignalKind::interrupt())?;
         tokio::spawn(async move {
-            if let Some(_) = stream.recv().await {
+            if (stream.recv().await).is_some() {
                 info!("Received SIGINT, terminating...");
+                if std::fs::metadata("./db/data.db").is_err() {
+                    warn!("Database file not found.");
+                    std::process::exit(1);
+                }
                 std::fs::remove_file("./db/data.db").expect("Failed to remove database");
                 info!("Database file removed.");
                 std::process::exit(0);
             }
         });
     }
-
-    let smalluid = small_uid::SmallUid::new()?;
-    info!("SmallUid: {}", smalluid);
-    let myulid = ulid::Ulid::new();
-    info!("Ulid: {}", myulid);
-    info!("Ulid: {}", myulid.to_string());
+    
     // initialize db
     db::initialize_db(PathBuf::from("db/data.db")).wrap_err("Failed to initialize database")?;
-    let _is_db = match DB.get() {
+    match DB.get() {
         Some(_s) => info!("Database initialized"),
         None => return Err(eyre!("DB is not initialized")),
     };
