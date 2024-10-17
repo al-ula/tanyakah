@@ -1,0 +1,9 @@
+[package]
+name = "small_uid"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+base64-url = "3.0.0"
+rand = "0.9.0-alpha.2"
+serde = { version = "1.0.210", features = ["derive"] }

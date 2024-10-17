@@ -1,15 +1,15 @@
 pub mod htmx;
 
-use std::collections::HashMap;
-use salvo::{handler, Response};
-use salvo::prelude::Text;
-use serde_json::json;
 use crate::render;
+use salvo::prelude::Text;
+use salvo::{handler, Response};
+use serde_json::json;
+use std::collections::HashMap;
 
 #[handler]
 pub async fn index(response: &mut Response) {
     let components = HashMap::from([
-        ("index".to_string(), render::get_component("main_layout")),
+        ("index".to_string(), render::get_component("layout")),
         ("content".to_string(), render::get_component("register")),
     ]);
     let page = render::render_layout(
@@ -17,97 +17,179 @@ pub async fn index(response: &mut Response) {
         components,
         &json!({
             "site": "Tanyakah",
-            "title": "Tanyakah"
+            "title": "Berbagi pesan rahasia di Tanyakah",
+            "description": "Dapatkan pesan rahasia dari teman-temanmu kalau kamu punya!."
         }),
     )
-        .await;
+    .await;
     response.render(Text::Html(page));
 }
 
 #[handler]
-pub async fn register(response: &mut Response) {
+pub async fn profile(response: &mut Response) {
     let components = HashMap::from([
-        ("daftar".to_string(), render::get_component("main_layout")),
-        ("content".to_string(), render::get_component("register")),
+        ("profile".to_string(), render::get_component("layout")),
+        ("content".to_string(), render::get_component("share")),
     ]);
     let page = render::render_layout(
-        "daftar",
+        "profile",
         components,
         &json!({
             "site": "Tanyakah",
-            "title": "Daftar ke Tanyakah"
+            "title": "Berbagi pesan rahasia di Tanyakah",
+            "description": "Dapatkan pesan rahasia dari teman-temanmu kalau kamu punya!.",
+            "profile": true
         }),
     )
-        .await;
+    .await;
+    response.render(Text::Html(page));
+}
+
+#[handler]
+pub async fn my_board(response: &mut Response) {
+    let components = HashMap::from([
+        ("my_board".to_string(), render::get_component("layout")),
+        ("content".to_string(), render::get_component("message_list")),
+        ("share".to_string(), render::get_component("share")),
+        ("message".to_string(), render::get_component("message")),
+        ("reply".to_string(), render::get_component("reply")),
+    ]);
+    let page = render::render_layout(
+        "my_board",
+        components,
+        &json!({
+            "site": "Tanyakah",
+            "title": "Berbagi pesan rahasia di Tanyakah",
+            "description": "Dapatkan pesan rahasia dari teman-temanmu kalau kamu punya!.",
+            "owned": true,
+            "board_id": "vcweri",
+            "messages": [
+                {
+                    "message": "Hello World",
+                    "id": "yuvb",
+                    "reply": [
+                        {
+                        "content": "Hello too",
+                        "id": "easf"
+                        },
+                        {
+                        "content": "Hey!",
+                        "id": "uiojn"
+                        }
+                    ]
+                },
+                {
+                    "message": "I am a message",
+                    "id": "bter",
+                    "reply": [
+                        {
+                        "content": "This is a reply",
+                        "id": "sze"
+                        },
+                        {
+                        "content": "I am a reply too",
+                        "id": "salk"
+                        }
+                    ]
+                }
+            ]
+        }),
+    )
+    .await;
     response.render(Text::Html(page));
 }
 
 #[handler]
 pub async fn board(response: &mut Response) {
     let components = HashMap::from([
-        ("papan".to_string(), render::get_component("main_layout")),
+        ("board".to_string(), render::get_component("layout")),
         ("content".to_string(), render::get_component("board")),
-        ("message_list".to_string(), render::get_component("message_list")),
+        (
+            "message_list".to_string(),
+            render::get_component("message_list"),
+        ),
+        (
+            "send_message".to_string(),
+            render::get_component("send_message"),
+        ),
         ("message".to_string(), render::get_component("message")),
-        ("reply".to_string(), render::get_component("message_reply")),
+        ("reply".to_string(), render::get_component("reply")),
     ]);
     let page = render::render_layout(
-        "papan",
+        "board",
         components,
         &json!({
             "site": "Tanyakah",
-            "title": "Papan Pesan Rahasia",
+            "title": "Berbagi pesan rahasia di Tanyakah",
+            "description": "Dapatkan pesan rahasia dari teman-temanmu kalau kamu punya!.",
+            "owned": false,
+            "board_id": "vcweri",
             "messages": [
-                {"message": "papan", "reply": ["asdf", "sdafsdf"]}
+                {
+                    "message": "Hello World",
+                    "id": "yuvb",
+                    "reply": [
+                        {
+                        "content": "Hello too",
+                        "id": "easf"
+                        },
+                        {
+                        "content": "Hey!",
+                        "id": "uiojn"
+                        }
+                    ]
+                },
+                {
+                    "message": "I am a message",
+                    "id": "bter",
+                    "reply": [
+                        {
+                        "content": "This is a reply",
+                        "id": "sze"
+                        },
+                        {
+                        "content": "I am a reply too",
+                        "id": "salk"
+                        }
+                    ]
+                }
             ]
         }),
     )
-        .await;
+    .await;
     response.render(Text::Html(page));
 }
 
 #[handler]
-pub async fn message(response: &mut Response) {
+pub async fn msg_page(response: &mut Response) {
     let components = HashMap::from([
-        ("pesan".to_string(), render::get_component("main_layout")),
-        ("content".to_string(), render::get_component("message_view")),
+        ("msg_page".to_string(), render::get_component("layout")),
+        ("content".to_string(), render::get_component("message_page")),
         ("message".to_string(), render::get_component("message")),
-        ("reply".to_string(), render::get_component("message_reply")),
+        ("reply".to_string(), render::get_component("reply")),
     ]);
     let page = render::render_layout(
-        "pesan",
+        "msg_page",
         components,
         &json!({
             "site": "Tanyakah",
-            "title": "Papan Pesan Rahasia",
-            "message": "pesan",
-            "reply": ["asdf", "sdafsdf"]
-        }),
-    )
-        .await;
-    response.render(Text::Html(page));
-}
-
-#[handler]
-pub async fn board_other(response: &mut Response) {
-    let components = HashMap::from([
-        ("papan".to_string(), render::get_component("main_layout")),
-        ("content".to_string(), render::get_component("board_other")),
-        ("message_list".to_string(), render::get_component("message_list")),
-        ("message".to_string(), render::get_component("message")),
-        ("reply".to_string(), render::get_component("message_reply")),
-    ]);
-    let page = render::render_layout(
-        "papan",
-        components,
-        &json!({
-            "site": "Tanyakah",
-            "title": "Papan Pesan Rahasia",
-            "messages": [
-                {"message": "papan", "reply": ["asdf", "sdafsdf"]}
+            "title": "Berbagi pesan rahasia di Tanyakah",
+            "description": "Dapatkan pesan rahasia dari teman-temanmu kalau kamu punya!.",
+            "board_id": "vcweri",
+            "message": "Hello World",
+            "id": "yuvb",
+            "reply": [
+                {
+                    "content": "Hello too",
+                    "id": "easf"
+                },
+                {
+                    "content": "Hey!",
+                    "id": "uiojn"
+                }
             ]
         }),
     )
-        .await;
+    .await;
     response.render(Text::Html(page));
 }

@@ -1,30 +1,20 @@
-<div class="card bg-primary w-96 mx-auto">
+<div class="card bg-primary w-full max-w-md mx-auto">
     <div class="card-body">
-        <article class="text-primary-content">
-            <h2 class="card-title">Papan Pesan Rahasia</h2>
-            <p>Get anonymous feedback from your Friends & Coworkers.</p>
-            <p>Improve your Friendship by discovering your Strengths and areas for Improvement</p>
+        <article class="text-primary-content prose prose-md mb-4">
+            <h2 class="card-title text-primary-content">Papan Pesan Rahasia</h2>
+            <p>Dapatkan pesan rahasia dari teman-temanmu!</p>
+            <p>Inilah kesempatanmu untuk memperbaiki diri dan pertemanan tanpa berat hati.</p>
         </article>
         <form hx-post="/daftar"
               hx-swap="outerHTML"
-              hx-trigger="submit[validateForm()]"
+              hx-trigger="submit"
               hx-target="closest .card"
               class="gap-4 flex flex-col"
         >
-            <input name="username" type="text" placeholder="Namamu" class="input input-bordered w-full max-w-xs" required/>
+            <input name="username" type="text" placeholder="Namamu" class="input input-bordered w-full" pattern="^(?!\s*$).+$" required/>
             <div class="card-actions justify-end">
                 <button class="btn w-full" type="submit">Daftar</button>
             </div>
-            <script>
-                function validateForm() {
-                    const username = document.querySelector('input[name="username"]').value.trim();
-                    if (!username) {
-                        alert("Nama tidak boleh kosong!");
-                        return false;
-                    }
-                    return true;
-                }
-            </script>
         </form>
     </div>
 </div>
