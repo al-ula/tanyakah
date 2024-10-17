@@ -1,53 +1,46 @@
-use ulid::Ulid;
+use serde::{Deserialize, Serialize};
+use small_uid::SmallUid;
 
+#[derive(Serialize, Deserialize)]
 pub struct Board {
-    pub user_id: Ulid,
-    pub board_id: Ulid,
-    pub user_name: String,
+    pub user: String,
+    pub id: String,
+    pub name: String,
+    pub messages: Vec<Message>,
 }
 
-impl Board {
-    pub fn new(user_id: Ulid, user_name: String) -> Self {
-        Self {
-            user_id,
-            board_id: Ulid::new(),
-            user_name
-        }
-    }
-}
-
+#[derive(Serialize, Deserialize)]
 pub struct Message {
-    pub message_id: Ulid,
-    pub board_id: Ulid,
-    pub content: String,
+    pub board_id: String,
+    pub id: String,
+    pub message: String,
+    pub reply: Vec<Reply>,
 }
 
-impl Message {
-    pub fn new(board_id: Ulid, content: String) -> Self {
-        Self {
-            message_id: Ulid::new(),
-            board_id,
-            content
-        }
-    }
-}
-
+#[derive(Serialize, Deserialize)]
 pub struct Reply {
-    pub reply_id: Ulid,
-    pub message_id: Ulid,
-    pub content: String,
+    pub message_id: String,
+    pub id: String,
+    pub reply: String,
 }
 
-impl Reply {
-    pub fn new(message_id: Ulid, content: String) -> Self {
-        Self {
-            reply_id: Ulid::new(),
-            message_id,
-            content
-        }
-    }
+#[derive(Serialize, Deserialize)]
+pub struct BoardDB {
+    pub user: SmallUid,
+    pub id: SmallUid,
+    pub name: String,
 }
 
-pub fn register(user_name: String) -> Board {
-    Board::new(Ulid::new(), user_name)
+#[derive(Serialize, Deserialize)]
+pub struct MessageDB {
+    pub board_id: SmallUid,
+    pub id: SmallUid,
+    pub message: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ReplyDB {
+    pub message_id: SmallUid,
+    pub id: SmallUid,
+    pub reply: String,
 }

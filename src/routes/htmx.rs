@@ -1,9 +1,11 @@
-use std::collections::HashMap;
+use crate::render;
+use salvo::prelude::{StatusCode, Text};
 use salvo::{handler, Request, Response};
-use salvo::prelude::Text;
+use serde::de::value::Error;
 use serde::Deserialize;
 use serde_json::json;
-use crate::render;
+use std::collections::HashMap;
+use tracing::info;
 
 #[derive(Deserialize)]
 struct FormData {
@@ -14,19 +16,40 @@ struct FormData {
 pub async fn register_post(req: &mut Request, res: &mut Response) {
     let body = req.payload().await.unwrap();
     let body_string = String::from_utf8(body.to_vec()).unwrap();
-    let form: FormData = serde_urlencoded::from_str(&body_string).unwrap();
-    let username = form.username;
-    println!("{}", username);
-    let components = HashMap::from([
-        ("papan".to_string(), render::get_component("board")),
-        ("message_list".to_string(), render::get_component("message")),
-        ("reply".to_string(), render::get_component("message_reply")),
-    ]);
-    let page = render::render_layout(
-        "papan",
-        components,
-        &json!({}),
-    )
-        .await;
-    res.render(Text::Html(page));
+    if req.headers().get("hx-request").map(|h| h.to_str().unwrap()) != Some("true") {
+        info!("Not htmx request");
+        res.status_code(StatusCode::BAD_REQUEST);
+        return;
+    }
+    let form: Result<FormData, Error> = serde_urlencoded::from_str(&body_string);
+    match form {
+        Ok(form) => {
+            let username = form.username;
+            println!("{}", username);
+            let components = HashMap::from([
+                ("papan".to_string(), render::get_component("board")),
+                (
+                    "message_list".to_string(),
+                    render::get_component("message_list"),
+                ),
+                ("reply".to_string(), render::get_component("message_reply")),
+            ]);
+            let page = render::render_layout("papan", components, &json!({})).await;
+            res.render(Text::Html(page));
+        }
+        Err(e) => {
+            info!("{:?}", e);
+            res.status_code(StatusCode::BAD_REQUEST);
+        }
+    }
+}
+
+#[handler]
+pub async fn send_message() {
+    // TODO
+}
+
+#[handler]
+pub async fn send_reply() {
+    // TODO
 }

@@ -1,23 +1,31 @@
-<div id="{{message_id}}" class="message flex flex-col gap-2 w-96 mx-auto mt-4">
-    <div class="card bg-neutral text-neutral-content w-96">
+<div id="{{message_id}}" class="message flex flex-col gap-2 w-full max-w-md mx-auto mt-4">
+    <div class="card bg-base-300 text-neutral-content w-full">
         <div class="card-body items-start text-center">
             <div class="card bg-base-100 w-full shadow-xl">
-                <div class="card-body text-left">
+                <div class="card-body text-left text-base-content">
                     {{message}}
                 </div>
             </div>
-            {{#each reply}}
-                {{> reply reply=this}}
-            {{/each}}
-            {{#if message_list}}
-            <div class="divider divider-accent text-accent"><button class="btn btn-sm btn-ghost" onclick="window.location.href='/{{board_id}}/{{message_id}}'">Buka</button></div>
-            {{/if}}
-            <div class="w-full flex flex-row gap-1 mt-4">
+            <div id="{{message_id}}-reply" class="items-start text-center w-full">
+                {{#each reply}}
+                    {{> reply reply=this.content reply_id=this.id }}
+                {{/each}}
+                {{#if message_list}}
+                    <div class="divider divider-accent text-accent"><button class="btn btn-sm btn-ghost" onclick="window.location.href='/{{board_id}}/{{message_id}}'">Buka</button></div>
+                {{/if}}
+            </div>
+
+            <form
+                    hx-post="/daftar"
+                    hx-swap="innerHTML"
+                    hx-target="#{{message_id}}-reply"
+                    hx-trigger="submit"
+                    class="w-full flex flex-row gap-1 mt-4">
                 <input
                         type="text"
                         placeholder="Balas"
-                        class="input input-sm w-full max-w-xs"/>
-                <button class="btn btn-neutral btn-sm">
+                        class="input input-sm bg-neutral w-full max-w-xs" pattern="^(?!\s*$).+$" required/>
+                <button class="btn btn-neutral btn-sm" type="submit">
                     <svg
                             class="w-5 h-5 stroke-accent"
                             stroke="currentColor"
@@ -33,7 +41,7 @@
                         ></path>
                     </svg>
                 </button>
-            </div>
+            </form>
         </div>
     </div>
 </div>

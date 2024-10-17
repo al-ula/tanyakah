@@ -1,9 +1,26 @@
+{{#if owned}}
+    {{> share}}
+{{/if}}
 {{#if messages}}
-    {{#each messages}}
-        {{> message message=this.message reply=this.reply }}
-    {{/each}}
+    <div id="message-container" class="w-full">
+        {{#each messages}}
+            {{> message
+                    board_id=board_id
+                    message_list=true
+                    message=this.message
+                    message_id=this.id
+                    reply=this.reply }}
+        {{/each}}
+        <div class="mx-auto w-max mt-12">
+            <div class="join">
+                <button class="join-item btn btn-disabled">«</button>
+                <button class="join-item btn btn-neutral">Page 1</button>
+                <button class="join-item btn btn-neutral">»</button>
+            </div>
+        </div>
+    </div>
 {{else}}
-    <div role="alert" class="alert alert-warning w-96 mx-auto mt-4">
+    <div role="alert" class="alert alert-warning w-full max-w-md mx-auto mt-4">
         <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-6 w-6 shrink-0 stroke-current"
@@ -13,7 +30,7 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
         </svg>
         <span>Such empty :(</span>
     </div>

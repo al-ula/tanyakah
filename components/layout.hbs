@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
     <link href="assets/style.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/assets/speak-svgrepo-com.png">
     <title>{{title}}</title>
+    <meta name="description" content="{{description}}">
+    <meta name="og:description" content="{{description}}">
+    <meta name="og:title" content="{{title}}">
+    <meta name="og:image" content="assets/speak-svgrepo-com-hi.png">
 </head>
 <body>
 <div class="p-2 h-dvh flex flex-col">
@@ -14,24 +19,26 @@
             <a class="btn btn-ghost text-xl" href="/">{{site}}</a>
         </div>
         <div class="flex-none">
-            <label for="drawer" class="btn btn-square btn-ghost">
-                <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        class="inline-block h-5 w-5 stroke-current">
-                    <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </label>
+            {{#if drawer}}
+                <label for="drawer" class="btn btn-square btn-ghost">
+                    <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            class="inline-block h-5 w-5 stroke-current">
+                        <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </label>
+            {{/if}}
         </div>
             </div>
     <div class="flex-grow bg-base-200 drawer drawer-end p-5">
         <input id="drawer" type="checkbox" class="drawer-toggle" />
-        <div class="drawer-content">
+        <div class="drawer-content pt-4">
             {{#> content}}
             <!-- Page content here -->
             {{/content}}
