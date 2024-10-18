@@ -5,7 +5,9 @@ mod replies;
 use redb::{Database, MultimapTableDefinition, TableDefinition};
 use std::path::PathBuf;
 use std::sync::{Arc, OnceLock};
+use eyre::{Result, WrapErr};
 
+#[derive(Clone)]
 pub struct Db {
     pub db: Arc<Database>,
 }
@@ -23,6 +25,21 @@ pub fn initialize_db(path: PathBuf) -> Result<(), redb::Error> {
     let db = Db::init(path)?;
     DB.set(db).ok();
     Ok(())
+}
+
+pub trait TryGet<T> {
+    fn try_get(&self) -> Result<&T>
+    where
+        Self: Sized,
+        T: std::clone::Clone;
+}
+
+impl TryGet<Db> for OnceLock<Db> {
+    fn try_get(&self) -> Result<&Db> {
+        let db = self.get()
+            .ok_or_else(|| eyre::eyre!("DB is not initialized"))?;
+        Ok(db)
+    }
 }
 
 pub const BOARDS: TableDefinition<u64, &[u8]> = TableDefinition::new("boards");

@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use small_uid::SmallUid;
+use eyre::{Result, Error};
 
 #[derive(Serialize, Deserialize)]
 pub struct Board {
@@ -55,15 +56,18 @@ impl Reply {
     }
 }
 
-impl From<Reply> for ReplyDB {
-    fn from(value: Reply) -> Self {
-        let message_id: SmallUid = value.message_id.try_into().unwrap();
-        let id: SmallUid = value.id.try_into().unwrap();
-        ReplyDB {
+impl TryFrom<Reply> for ReplyDB {
+    type Error = Error;
+
+    fn try_from(value: Reply) -> Result<Self, Self::Error> {
+        let message_id: SmallUid = value.message_id.try_into()?;
+        let id: SmallUid = value.id.try_into()?;
+        let replydb = ReplyDB {
             message_id,
             id,
             reply: value.reply,
-        }
+        };
+        Ok(replydb)
     }
 }
 
@@ -75,13 +79,13 @@ impl ReplyDB {
             reply,
         }
     }
-    pub fn new(message_id: SmallUid, reply: String) -> Self {
-        let id = SmallUid::new().unwrap();
-        ReplyDB {
+    pub fn new(message_id: SmallUid, reply: String) -> Result<Self> {
+        let id = SmallUid::new()?;
+        Ok(ReplyDB {
             message_id,
             id,
             reply,
-        }
+        })
     }
 }
 
@@ -98,13 +102,13 @@ impl From<ReplyDB> for Reply {
 }
 
 impl Message {
-    pub fn new(board_id: String, message: String, reply: Vec<Reply>) -> Self {
-        Self {
+    pub fn new(board_id: String, message: String, reply: Vec<Reply>) -> Result<Self> {
+        Ok(Self {
             board_id,
-            id: String::from(SmallUid::new().unwrap()),
+            id: String::from(SmallUid::new()?),
             message,
             reply,
-        }
+        })
     } 
 
     pub fn compose(board_id: String, id: String, message: String, reply: Vec<Reply>) -> Self {
@@ -117,15 +121,17 @@ impl Message {
     }
 }
 
-impl From<Message> for MessageDB {
-    fn from(value: Message) -> Self {
-        let board_id: SmallUid = value.board_id.try_into().unwrap();
-        let id: SmallUid = value.id.try_into().unwrap();
-        MessageDB {
+impl TryFrom<Message> for MessageDB {
+    type Error = Error;
+
+    fn try_from(value: Message) -> Result<Self, Self::Error> {
+        let board_id: SmallUid = value.board_id.try_into()?;
+        let id: SmallUid = value.id.try_into()?;
+        Ok(MessageDB {
             board_id,
             id,
             message: value.message,
-        }
+        })
     }
 }
 
@@ -140,13 +146,13 @@ impl MessageDB {
         }
     }
     
-    pub fn new(board_id: SmallUid, message: String) -> Self {
-        let id = SmallUid::new().unwrap();
-        MessageDB {
+    pub fn new(board_id: SmallUid, message: String) -> Result<Self> {
+        let id = SmallUid::new()?;
+        Ok(MessageDB {
             board_id,
             id,
             message,
-        }
+        })
     }
     
     pub fn compose(board_id: SmallUid, id: SmallUid, message: String) -> Self {
@@ -159,13 +165,13 @@ impl MessageDB {
 }
 
 impl Board {
-    pub fn new(name: String, messages: Vec<Message>) -> Self {
-        Self {
-            user: String::from(SmallUid::new().unwrap()),
-            id: String::from(SmallUid::new().unwrap()),
+    pub fn new(name: String, messages: Vec<Message>) -> Result<Self> {
+        Ok(Self {
+            user: String::from(SmallUid::new()?),
+            id: String::from(SmallUid::new()?),
             name,
             messages,
-        }
+        })
     }
     
     pub fn compose(user: String, name: String, id: String, messages: Vec<Message>) -> Self {
@@ -178,27 +184,28 @@ impl Board {
     }
 }
 
-impl From<Board> for BoardDB {
-    fn from(value: Board) -> Self {
-        let user: SmallUid = value.user.try_into().unwrap();
-        let id: SmallUid = value.id.try_into().unwrap();
-        BoardDB {
+impl TryFrom<Board> for BoardDB {
+    type Error = Error;
+    fn try_from(value: Board) -> Result<Self, Self::Error> {
+        let user: SmallUid = value.user.try_into()?;
+        let id: SmallUid = value.id.try_into()?;
+        Ok(BoardDB {
             user,
             id,
             name: value.name,
-        }
+        })
     }
 }
 
 impl BoardDB {
-    pub fn new(name: String) -> Self {
-        let user = SmallUid::new().unwrap();
-        let id = SmallUid::new().unwrap();
-        BoardDB {
+    pub fn new(name: String) -> Result<Self> {
+        let user = SmallUid::new()?;
+        let id = SmallUid::new()?;
+        Ok(BoardDB {
             user,
             id,
             name,
-        }
+        })
     }
     
     pub fn compose(user: SmallUid, id: SmallUid, name: String) -> Self {

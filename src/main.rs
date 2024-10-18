@@ -17,8 +17,13 @@ async fn main() -> Result<(), Report> {
     // reset db on debug
     #[cfg(debug_assertions)]
     {
-        let smalluid = small_uid::SmallUid::new()?;
-        info!("SmallUid: {}", smalluid);
+        for i in 0..4 {
+            let small_uid = small_uid::SmallUid::new()?;
+            let small_uid_str = small_uid.to_string();
+            let char_len = small_uid_str.chars().count();
+            info!("SmallUid: {} ({} characters)", small_uid_str, char_len);
+        };
+        
         use tokio::signal::unix::{signal, SignalKind};
         let mut stream = signal(SignalKind::interrupt())?;
         tokio::spawn(async move {
