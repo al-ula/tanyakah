@@ -5,7 +5,7 @@ use serde::de::value::Error;
 use serde::Deserialize;
 use serde_json::json;
 use std::collections::HashMap;
-use tracing::info;
+use tracing::{debug, warn};
 
 #[derive(Deserialize)]
 struct FormData {
@@ -17,7 +17,7 @@ pub async fn register_post(req: &mut Request, res: &mut Response) {
     let body = req.payload().await.unwrap();
     let body_string = String::from_utf8(body.to_vec()).unwrap();
     if req.headers().get("hx-request").map(|h| h.to_str().unwrap()) != Some("true") {
-        info!("Not htmx request");
+        warn!("Not htmx request");
         res.status_code(StatusCode::BAD_REQUEST);
         return;
     }
@@ -25,7 +25,7 @@ pub async fn register_post(req: &mut Request, res: &mut Response) {
     match form {
         Ok(form) => {
             let username = form.username;
-            println!("{}", username);
+            debug!("{}", username);
             let components = HashMap::from([
                 ("papan".to_string(), render::get_component("board")),
                 (
@@ -38,7 +38,7 @@ pub async fn register_post(req: &mut Request, res: &mut Response) {
             res.render(Text::Html(page));
         }
         Err(e) => {
-            info!("{:?}", e);
+            warn!("{:?}", e);
             res.status_code(StatusCode::BAD_REQUEST);
         }
     }

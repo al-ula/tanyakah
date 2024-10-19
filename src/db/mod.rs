@@ -2,10 +2,10 @@ mod boards;
 mod messages;
 mod replies;
 
+use eyre::{Result, WrapErr};
 use redb::{Database, MultimapTableDefinition, TableDefinition};
 use std::path::PathBuf;
 use std::sync::{Arc, OnceLock};
-use eyre::{Result, WrapErr};
 
 #[derive(Clone)]
 pub struct Db {
@@ -13,19 +13,20 @@ pub struct Db {
 }
 
 impl Db {
-    pub fn init(path_buf: PathBuf) -> Result<Db, redb::Error> {
-        let db = Database::create(path_buf)?;
+    pub fn create(path: PathBuf) -> Result<Db, redb::Error> {
+        let db = Database::create(path)?;
         Ok(Self { db: Arc::new(db) })
+    }
+    pub fn init(path: PathBuf) -> Result<(), redb::Error> {
+        let db = Db::create(path)?;
+        DB.set(db).ok();
+        Ok(())
     }
 }
 
 pub static DB: OnceLock<Db> = OnceLock::new();
 
-pub fn initialize_db(path: PathBuf) -> Result<(), redb::Error> {
-    let db = Db::init(path)?;
-    DB.set(db).ok();
-    Ok(())
-}
+
 
 pub trait TryGet<T> {
     fn try_get(&self) -> Result<&T>
@@ -36,7 +37,8 @@ pub trait TryGet<T> {
 
 impl TryGet<Db> for OnceLock<Db> {
     fn try_get(&self) -> Result<&Db> {
-        let db = self.get()
+        let db = self
+            .get()
             .ok_or_else(|| eyre::eyre!("DB is not initialized"))?;
         Ok(db)
     }
@@ -52,4 +54,11 @@ pub const REPLIES: TableDefinition<u64, &[u8]> = TableDefinition::new("replies")
 pub const REPLIES_BY_MESSAGE: MultimapTableDefinition<u64, u64> =
     MultimapTableDefinition::new("replies_by_message");
 
-
+pub fn del_user(id: u64) -> Result<()> {
+    let db = DB.try_get()?.db.clone();
+    let boards = boards::get_boards_list(id)?;
+    for board in boards {
+        boards::del_board(board)?;        
+    }
+    Ok(())
+}

@@ -13,9 +13,17 @@
         {{/each}}
         <div class="mx-auto w-max mt-12">
             <div class="join">
-                <button class="join-item btn btn-disabled">«</button>
-                <button class="join-item btn btn-neutral">Page 1</button>
-                <button class="join-item btn btn-neutral">»</button>
+                {{#if prev_page}}
+                    <button class="join-item btn btn-neutral">«</button>
+                {{else}}
+                    <button class="join-item btn btn-neutral btn-disabled">«</button>
+                {{/if}}
+                <button class="join-item btn btn-neutral btn-disabled">Page {{page}}</button>
+                {{#if next_page}}
+                    <button class="join-item btn btn-neutral">»</button>
+                {{else}}
+                    <button class="join-item btn btn-neutral btn-disabled">»</button>
+                {{/if}}
             </div>
         </div>
     </div>

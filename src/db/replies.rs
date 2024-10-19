@@ -56,3 +56,18 @@ pub fn get_replies(message_id: u64) -> Result<Vec<ReplyDB>> {
     }
     Ok(vec)
 }
+
+pub fn del_reply(id: u64) -> Result<()> {
+    let db = DB.try_get()?.db.clone();
+    let message_id: u64 = get_reply(id)?.message_id.into();
+    let write_txn = db.begin_write()?;
+    {
+        let mut table = write_txn.open_table(REPLIES)?;
+        table.remove(id)?;
+
+        let mut table = write_txn.open_multimap_table(REPLIES_BY_MESSAGE)?;
+        table.remove(message_id, id)?;
+    }
+    write_txn.commit()?;
+    Ok(())
+}

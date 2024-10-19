@@ -1,12 +1,13 @@
 use super::{TryGet, BOARDS, BOARDS_BY_USER, DB};
 use crate::data::BoardDB;
 use bincode::serialize;
-use redb::MultimapValue;
 use eyre::{ContextCompat, OptionExt, Result, WrapErr};
+use redb::MultimapValue;
+use crate::db::messages::{del_message, get_messages_list};
 
 pub fn check_board(board_id: u64) -> Result<()> {
     let db = DB.try_get()?;
-    let db =db.db.clone();
+    let db = db.db.clone();
     let read_txn = db.begin_read()?;
     let table = read_txn.open_table(BOARDS)?;
     table.get(board_id)?;
@@ -60,4 +61,23 @@ pub fn get_boards(user_id: u64) -> Result<Vec<BoardDB>> {
         vec.push(board);
     }
     Ok(vec)
+}
+
+pub fn del_board(id: u64) -> Result<()> {
+    let db = DB.try_get()?.db.clone();
+    let user_id: u64 = get_board(id)?.user.into();
+    let messages = get_messages_list(id)?;
+    for message_id in messages {
+        del_message(message_id)?;
+    }
+    let write_txn = db.begin_write()?;
+    {
+        let mut table = write_txn.open_table(BOARDS)?;
+        table.remove(id)?;
+
+        let mut table = write_txn.open_multimap_table(BOARDS_BY_USER)?;
+        table.remove(user_id, id)?;
+    }
+    write_txn.commit()?;
+    Ok(())
 }

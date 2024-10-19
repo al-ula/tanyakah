@@ -1,6 +1,6 @@
+use eyre::{Error, Result};
 use serde::{Deserialize, Serialize};
 use small_uid::SmallUid;
-use eyre::{Result, Error};
 
 #[derive(Serialize, Deserialize)]
 pub struct Board {
@@ -109,7 +109,7 @@ impl Message {
             message,
             reply,
         })
-    } 
+    }
 
     pub fn compose(board_id: String, id: String, message: String, reply: Vec<Reply>) -> Self {
         Self {
@@ -145,7 +145,7 @@ impl MessageDB {
             reply: replies,
         }
     }
-    
+
     pub fn new(board_id: SmallUid, message: String) -> Result<Self> {
         let id = SmallUid::new()?;
         Ok(MessageDB {
@@ -154,7 +154,7 @@ impl MessageDB {
             message,
         })
     }
-    
+
     pub fn compose(board_id: SmallUid, id: SmallUid, message: String) -> Self {
         MessageDB {
             board_id,
@@ -173,7 +173,7 @@ impl Board {
             messages,
         })
     }
-    
+
     pub fn compose(user: String, name: String, id: String, messages: Vec<Message>) -> Self {
         Self {
             user,
@@ -201,21 +201,13 @@ impl BoardDB {
     pub fn new(name: String) -> Result<Self> {
         let user = SmallUid::new()?;
         let id = SmallUid::new()?;
-        Ok(BoardDB {
-            user,
-            id,
-            name,
-        })
+        Ok(BoardDB { user, id, name })
     }
-    
+
     pub fn compose(user: SmallUid, id: SmallUid, name: String) -> Self {
-        BoardDB {
-            user,
-            id,
-            name,
-        }
+        BoardDB { user, id, name }
     }
-    
+
     pub fn to_board(&self, messages: Vec<Message>) -> Board {
         Board {
             user: self.user.into(),

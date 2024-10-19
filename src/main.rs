@@ -2,46 +2,61 @@ use crate::db::DB;
 use eyre::{eyre, Report, Result, WrapErr};
 use salvo::prelude::*;
 use salvo::serve_static::StaticDir;
-use std::path::PathBuf;
-use tracing::{info, warn};
+use tracing::{error, info, warn};
+use tracing_subscriber::EnvFilter;
+use crate::config::{Config, CONFIG};
 
 mod data;
 mod db;
 mod render;
 mod routes;
+mod config;
 
 #[tokio::main]
 async fn main() -> Result<(), Report> {
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::fmt()
+        .with_env_filter(EnvFilter::try_from_env("TANYAKAH_LOG").unwrap_or(EnvFilter::new("info")))
+        .init();
     info!("Starting");
+
+    match Config::init() {
+        Ok(_) => {info!("Config loaded");}
+        Err(e) => {
+            return Err(e);
+        }
+    };
+    
+    let config = match CONFIG.get() {
+        None => {
+            error!("Config not loaded");
+            std::process::exit(1);
+        }
+        Some(c) => c.clone(),
+    };
+    
     // reset db on debug
     #[cfg(debug_assertions)]
     {
-        for i in 0..4 {
-            let small_uid = small_uid::SmallUid::new()?;
-            let small_uid_str = small_uid.to_string();
-            let char_len = small_uid_str.chars().count();
-            info!("SmallUid: {} ({} characters)", small_uid_str, char_len);
-        };
-        
         use tokio::signal::unix::{signal, SignalKind};
         let mut stream = signal(SignalKind::interrupt())?;
+        let db = config.db.clone();
         tokio::spawn(async move {
-            if (stream.recv().await).is_some() {
+            if stream.recv().await.is_some() {
                 info!("Received SIGINT, terminating...");
-                if std::fs::metadata("./db/data.db").is_err() {
+                let db = db;
+                if std::fs::metadata(&db).is_err() {
                     warn!("Database file not found.");
                     std::process::exit(1);
                 }
-                std::fs::remove_file("./db/data.db").expect("Failed to remove database");
+                std::fs::remove_file(&db).expect("Failed to remove database");
                 info!("Database file removed.");
                 std::process::exit(0);
             }
         });
     }
-    
+
     // initialize db
-    db::initialize_db(PathBuf::from("db/data.db")).wrap_err("Failed to initialize database")?;
+    db::Db::init(CONFIG.get().unwrap().db.clone()).wrap_err("Failed to initialize database")?;
     match DB.get() {
         Some(_s) => info!("Database initialized"),
         None => return Err(eyre!("DB is not initialized")),
@@ -60,7 +75,8 @@ async fn main() -> Result<(), Report> {
             Router::with_path("assets")
                 .push(Router::with_path("<**path>").get(StaticDir::new("assets"))),
         );
-    let acceptor = TcpListener::new("127.0.0.1:8800").bind().await;
+    let url = config.host.clone() + ":" + &config.port.to_string();
+    let acceptor = TcpListener::new(url).bind().await;
     Server::new(acceptor).serve(router).await;
     Ok(())
 }

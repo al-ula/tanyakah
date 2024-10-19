@@ -1,16 +1,18 @@
-use serde_json::{json, Value};
+use serde_json::Value;
 use std::collections::HashMap;
-use tracing::info;
+use std::path::PathBuf;
+use tracing::debug;
+use crate::config::CONFIG;
 
-const COMPONENTS_PATH: &str = "components";
 
-pub fn get_component(name: &str) -> String {
-    format!("{}/{}.hbs", COMPONENTS_PATH, name)
+pub fn get_component(name: &str) -> String{
+    let components = CONFIG.get().unwrap().components.clone();
+    components.join(name).with_extension("hbs").to_str().unwrap().to_string()
 }
 
 pub async fn render_layout(name: &str, contents: HashMap<String, String>, data: &Value) -> String {
     let mut reg = handlebars::Handlebars::new();
-    info!("Rendering {}", name);
+    debug!("Rendering {}", name);
     for (key, value) in contents {
         reg.register_template_file(&key, &value).unwrap();
     }
