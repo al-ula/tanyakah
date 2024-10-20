@@ -80,7 +80,7 @@ impl ReplyDB {
         }
     }
     pub fn new(message_id: SmallUid, reply: String) -> Result<Self> {
-        let id = SmallUid::new()?;
+        let id = SmallUid::new();
         Ok(ReplyDB {
             message_id,
             id,
@@ -105,7 +105,7 @@ impl Message {
     pub fn new(board_id: String, message: String, reply: Vec<Reply>) -> Result<Self> {
         Ok(Self {
             board_id,
-            id: String::from(SmallUid::new()?),
+            id: String::from(SmallUid::new()),
             message,
             reply,
         })
@@ -147,7 +147,7 @@ impl MessageDB {
     }
 
     pub fn new(board_id: SmallUid, message: String) -> Result<Self> {
-        let id = SmallUid::new()?;
+        let id = SmallUid::new();
         Ok(MessageDB {
             board_id,
             id,
@@ -167,8 +167,8 @@ impl MessageDB {
 impl Board {
     pub fn new(name: String, messages: Vec<Message>) -> Result<Self> {
         Ok(Self {
-            user: String::from(SmallUid::new()?),
-            id: String::from(SmallUid::new()?),
+            user: String::from(SmallUid::new()),
+            id: String::from(SmallUid::new()),
             name,
             messages,
         })
@@ -199,8 +199,8 @@ impl TryFrom<Board> for BoardDB {
 
 impl BoardDB {
     pub fn new(name: String) -> Result<Self> {
-        let user = SmallUid::new()?;
-        let id = SmallUid::new()?;
+        let user = SmallUid::new();
+        let id = SmallUid::new();
         Ok(BoardDB { user, id, name })
     }
 

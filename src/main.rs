@@ -11,6 +11,7 @@ mod db;
 mod render;
 mod routes;
 mod config;
+mod auth;
 
 #[tokio::main]
 async fn main() -> Result<(), Report> {
@@ -18,14 +19,14 @@ async fn main() -> Result<(), Report> {
         .with_env_filter(EnvFilter::try_from_env("TANYAKAH_LOG").unwrap_or(EnvFilter::new("info")))
         .init();
     info!("Starting");
-
+    
     match Config::init() {
         Ok(_) => {info!("Config loaded");}
         Err(e) => {
             return Err(e);
         }
     };
-    
+
     let config = match CONFIG.get() {
         None => {
             error!("Config not loaded");
@@ -33,7 +34,7 @@ async fn main() -> Result<(), Report> {
         }
         Some(c) => c.clone(),
     };
-    
+
     // reset db on debug
     #[cfg(debug_assertions)]
     {
@@ -62,6 +63,8 @@ async fn main() -> Result<(), Report> {
         None => return Err(eyre!("DB is not initialized")),
     };
 
+    auth::init();
+    
     let router = Router::new()
         .get(routes::index)
         .push(Router::with_path("profil").get(routes::profile))
@@ -80,3 +83,4 @@ async fn main() -> Result<(), Report> {
     Server::new(acceptor).serve(router).await;
     Ok(())
 }
+

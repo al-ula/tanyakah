@@ -1897,9 +1897,9 @@ dependencies = [
 
 [[package]]
 name = "small_uid"
-version = "0.1.2"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bd2c3e3ef591f492e83e3a610f5667bbd3fe3a42f35930bac827f3e4ec2b5400"
+checksum = "d8ae791465049b98571da74e2fe6c874b8951956807b9b815328359fffef0e85"
 dependencies = [
  "base64-url",
  "rand 0.9.0-alpha.2",
@@ -1985,6 +1985,7 @@ dependencies = [
  "directories",
  "eyre",
  "handlebars",
+ "jsonwebtoken",
  "log",
  "rand 0.8.5",
  "redb",
