@@ -20,6 +20,8 @@ pub fn insert_reply(reply: ReplyDB) -> Result<()> {
     {
         let mut table = write_txn.open_table(REPLIES)?;
         table.insert(id, data)?;
+        let mut table2 = write_txn.open_multimap_table(REPLIES_BY_MESSAGE)?;
+        table2.insert(reply.message_id.0, id)?;
     }
     write_txn.commit()?;
     Ok(())

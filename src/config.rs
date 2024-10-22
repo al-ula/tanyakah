@@ -1,13 +1,13 @@
+use crate::db::TryGet;
+use directories::ProjectDirs;
+use eyre::{eyre, Result};
+use log::info;
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::Read;
 use std::path::PathBuf;
 use std::sync::OnceLock;
-use directories::ProjectDirs;
-use serde::{Deserialize, Serialize};
-use eyre::{eyre, Result};
-use log::info;
 use tracing::{error, warn};
-use crate::db::TryGet;
 
 pub static CONFIG: OnceLock<Config> = OnceLock::new();
 
@@ -32,15 +32,12 @@ impl Default for Config {
             components: PathBuf::from("components"),
         }
     }
-
 }
 
 impl TryGet<Config> for OnceLock<Config> {
     fn try_get(&self) -> Result<&Config> {
         match CONFIG.get() {
-            None => {
-                Err(eyre::eyre!("Config is not initialized"))
-            }
+            None => Err(eyre::eyre!("Config is not initialized")),
             Some(c) => Ok(c),
         }
     }

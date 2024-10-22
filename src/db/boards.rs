@@ -1,9 +1,12 @@
 use super::{TryGet, BOARDS, BOARDS_BY_USER, DB};
-use crate::data::BoardDB;
+use crate::data::{Board, BoardDB};
+use crate::db::messages::{
+    del_message, full_message, full_messages_preview, get_messages, get_messages_list,
+};
 use bincode::serialize;
-use eyre::{ContextCompat, OptionExt, Result, WrapErr};
+use eyre::{OptionExt, Result, WrapErr};
+use log::info;
 use redb::MultimapValue;
-use crate::db::messages::{del_message, get_messages_list};
 
 pub fn check_board(board_id: u64) -> Result<()> {
     let db = DB.try_get()?;
@@ -80,4 +83,28 @@ pub fn del_board(id: u64) -> Result<()> {
     }
     write_txn.commit()?;
     Ok(())
+}
+
+pub fn full_board(board_id: u64) -> Result<Board> {
+    let board = get_board(board_id)?;
+    let mut messages = Vec::new();
+    let is_messaged = get_messages_list(board_id).is_ok();
+    info!("is_messaged: {:?}", is_messaged);
+    if is_messaged {
+        for message_id in get_messages_list(board_id)? {
+            messages.push(full_message(message_id)?);
+        }
+    }
+    Ok(board.to_board(messages))
+}
+
+pub fn full_board_preview(board_id: u64) -> Result<Board> {
+    let board = get_board(board_id)?;
+    let mut messages = Vec::new();
+    let is_messaged = get_messages_list(board_id).is_ok();
+    info!("is_messaged: {:?}", is_messaged);
+    if is_messaged {
+        messages = full_messages_preview(board_id)?;
+    }
+    Ok(board.to_board(messages))
 }

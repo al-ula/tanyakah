@@ -8,21 +8,24 @@
             </div>
             <div id="{{message_id}}-reply" class="items-start text-center w-full">
                 {{#each reply}}
-                    {{> reply reply=this.content reply_id=this.id }}
+                    {{> reply reply=this.reply reply_id=this.id }}
                 {{/each}}
                 {{#if message_list}}
-                    <div class="divider divider-accent text-accent"><button class="btn btn-sm btn-ghost" onclick="window.location.href='/{{board_id}}/{{message_id}}'">Buka</button></div>
+                    <div class="divider divider-accent text-accent"><button class="btn btn-sm btn-ghost" onclick="window.location.href='/msg/{{message_id}}'">Buka</button></div>
                 {{/if}}
             </div>
 
             <form
-                    hx-post="/daftar"
-                    hx-swap="innerHTML"
-                    hx-target="#{{message_id}}-reply"
+                    hx-post="/rpl"
+                    hx-swap="outerHTML"
+                    hx-target="#{{message_id}}"
                     hx-trigger="submit"
                     class="w-full flex flex-row gap-1 mt-4">
+                <input type="hidden" name="message_id" value="{{message_id}}"/>
+                <input type="hidden" name="message_list" value="{{#if message_list}}true{{else}}false{{/if}}"/>
                 <input
                         type="text"
+                        name="reply"
                         placeholder="Balas"
                         class="input input-sm bg-neutral w-full max-w-xs" pattern="^(?!\s*$).+$" required/>
                 <button class="btn btn-neutral btn-sm" type="submit">

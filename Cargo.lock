@@ -1977,7 +1977,7 @@ dependencies = [
 
 [[package]]
 name = "tanyakah"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "base64-url",
  "bincode",
@@ -1998,6 +1998,7 @@ dependencies = [
  "toml",
  "tracing",
  "tracing-subscriber",
+ "url",
 ]
 
 [[package]]

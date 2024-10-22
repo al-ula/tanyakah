@@ -1,8 +1,9 @@
-mod boards;
-mod messages;
-mod replies;
+pub(crate) mod boards;
+pub(crate) mod messages;
+pub(crate) mod replies;
 
-use eyre::{Result, WrapErr};
+use crate::data::BoardDB;
+use eyre::Result;
 use redb::{Database, MultimapTableDefinition, TableDefinition};
 use std::path::PathBuf;
 use std::sync::{Arc, OnceLock};
@@ -25,8 +26,6 @@ impl Db {
 }
 
 pub static DB: OnceLock<Db> = OnceLock::new();
-
-
 
 pub trait TryGet<T> {
     fn try_get(&self) -> Result<&T>
@@ -58,7 +57,23 @@ pub fn del_user(id: u64) -> Result<()> {
     let db = DB.try_get()?.db.clone();
     let boards = boards::get_boards_list(id)?;
     for board in boards {
-        boards::del_board(board)?;        
+        boards::del_board(board)?;
     }
+    Ok(())
+}
+
+pub fn check_user(id: u64) -> Result<()> {
+    let db = DB.try_get()?.db.clone();
+    let read_txn = db.begin_read()?;
+    let table = read_txn.open_multimap_table(BOARDS_BY_USER)?;
+    table.get(id)?;
+    Ok(())
+}
+
+pub fn create_board(name: String) -> Result<BoardDB> {
+    BoardDB::new(name.clone())
+}
+pub fn register_board(board: BoardDB) -> Result<()> {
+    boards::insert_board(board)?;
     Ok(())
 }

@@ -1,17 +1,19 @@
+use crate::config::{Config, CONFIG};
 use crate::db::DB;
 use eyre::{eyre, Report, Result, WrapErr};
 use salvo::prelude::*;
 use salvo::serve_static::StaticDir;
+use small_uid::SmallUid;
 use tracing::{error, info, warn};
 use tracing_subscriber::EnvFilter;
-use crate::config::{Config, CONFIG};
 
+mod auth;
+mod config;
 mod data;
 mod db;
+mod middleware;
 mod render;
 mod routes;
-mod config;
-mod auth;
 
 #[tokio::main]
 async fn main() -> Result<(), Report> {
@@ -19,9 +21,20 @@ async fn main() -> Result<(), Report> {
         .with_env_filter(EnvFilter::try_from_env("TANYAKAH_LOG").unwrap_or(EnvFilter::new("info")))
         .init();
     info!("Starting");
-    
+
+    let some_uid = match SmallUid::try_from("GSqzvxLPHT8".to_string()) {
+        Ok(u) => u,
+        Err(e) => {
+            info!("e: {:#?}", e);
+            return Err(Report::from(e));
+        }
+    };
+    info!("some_uid: {:?}", some_uid.to_string());
+
     match Config::init() {
-        Ok(_) => {info!("Config loaded");}
+        Ok(_) => {
+            info!("Config loaded");
+        }
         Err(e) => {
             return Err(e);
         }
@@ -64,16 +77,20 @@ async fn main() -> Result<(), Report> {
     };
 
     auth::init();
-    
+
     let router = Router::new()
+        .hoop(middleware::verify_auth)
         .get(routes::index)
-        .push(Router::with_path("profil").get(routes::profile))
-        .push(Router::with_path("papanku").get(routes::my_board))
-        .push(Router::with_path("papan").get(routes::board))
-        .push(Router::with_path("pesan").get(routes::msg_page))
-        .push(Router::with_path("msg").push(Router::with_path("<msg_id>")))
-        .push(Router::with_path("rpl").push(Router::with_path("<rpl_id>")))
-        .push(Router::with_path("<board_id>"))
+        .post(routes::htmx::register)
+        .push(
+            Router::with_path("msg")
+                .hoop(middleware::verify_hx_request)
+                .post(routes::htmx::send_message)
+                .get(routes::htmx::get_messages),
+        )
+        .push(Router::with_path("msg/<msg_id>").get(routes::message_view))
+        .push(Router::with_path("rpl").hoop(middleware::verify_hx_request).post(routes::htmx::send_reply))
+        .push(Router::with_path("<board_id>").get(routes::board_view))
         .push(
             Router::with_path("assets")
                 .push(Router::with_path("<**path>").get(StaticDir::new("assets"))),
@@ -83,4 +100,3 @@ async fn main() -> Result<(), Report> {
     Server::new(acceptor).serve(router).await;
     Ok(())
 }
-

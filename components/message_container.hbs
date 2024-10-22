@@ -1,0 +1,25 @@
+<div id="message-container" class="w-full">
+    {{#each messages}}
+        {{> message
+                board_id=board_id
+                message_list=true
+                message=this.message
+                message_id=this.id
+                reply=this.reply }}
+    {{/each}}
+<!--    <div class="mx-auto w-max mt-12">-->
+<!--        <div class="join">-->
+<!--            {{#if prev_page}}-->
+<!--                <button class="join-item btn btn-neutral">«</button>-->
+<!--            {{else}}-->
+<!--                <button class="join-item btn btn-neutral btn-disabled">«</button>-->
+<!--            {{/if}}-->
+<!--            <button class="join-item btn btn-neutral btn-disabled">Page {{page}}</button>-->
+<!--            {{#if next_page}}-->
+<!--                <button class="join-item btn btn-neutral">»</button>-->
+<!--            {{else}}-->
+<!--                <button class="join-item btn btn-neutral btn-disabled">»</button>-->
+<!--            {{/if}}-->
+<!--        </div>-->
+<!--    </div>-->
+</div>

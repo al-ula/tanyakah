@@ -3,9 +3,22 @@
         <article class="card-title prose prose-md mb-4">
             <h4 class="text-neutral-content">Kirimkan pesan rahasia untuk temanmu</h4>
         </article>
-        <textarea class="textarea text-base-content w-full" required placeholder="Pesan"></textarea>
-        <div class="card-actions">
-            <button class="btn w-full" type="submit">Kirimkan pesan</button>
-        </div>
+        <form hx-post="/msg" hx-target="#message-container" hx-trigger="submit" hx-swap="outerHTML">
+            <textarea id="messageInput" class="textarea text-base-content w-full" name="message" required placeholder="Pesan"></textarea>
+            <div class="card-actions">
+                <button class="btn w-full" type="submit">Kirimkan pesan</button>
+            </div>
+        </form>
+        <script>
+            document.body.addEventListener('htmx:configRequest', function(evt) {
+                // Find the board div and get the board-id attribute
+                // Add the board_id parameter to the request
+                evt.detail.parameters['board_id'] = document.getElementById('board').getAttribute('board-id');
+            });
+            document.body.addEventListener('htmx:afterOnLoad', function() {
+                document.getElementById('messageInput').value = '';
+            });
+        </script>
     </div>
 </div>
+

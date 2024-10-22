@@ -1,5 +1,9 @@
-<div class="mx-auto w-full max-w-md mt-4 mb-8">
-    <article class="prose text-center"><h3>Papan pesan {{user_name}}</h3></article>
+<div id="board" board-id="{{board_id}}">
+    {{#unless owned}}
+        <div class="mx-auto w-full max-w-md mt-4 mb-8">
+            <article class="prose text-center"><h2>Papan pesan {{user_name}}</h2></article>
+        </div>
+        {{> send_message}}
+    {{/unless}}
+    {{> message_list}}
 </div>
-{{> send_message}}
-{{> message_list}}

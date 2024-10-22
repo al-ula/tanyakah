@@ -1,18 +1,23 @@
-<button
-        class="btn btn-neutral btn-sm btn-square w-12 h-12"
-        onclick="window.location.href='/{{board_id}}';">
-    <svg
-            class="w-10 h-10 stroke-accent"
-            stroke="currentColor"
-            stroke-width="1.5"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-    >
-        <path
-                d="M14.5 17L9.5 12L14.5 7"
-                stroke-linecap="round" stroke-linejoin="round"
-        ></path>
-    </svg>
-</button>
-{{> message message_id=id}}
+<div id="massage-page">
+    <button
+            class="btn btn-neutral btn-sm btn-square w-12 h-12"
+            onclick="window.location.href='/{{board_id}}';">
+        <svg
+                class="w-10 h-10 stroke-accent"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+        >
+            <path
+                    d="M14.5 17L9.5 12L14.5 7"
+                    stroke-linecap="round" stroke-linejoin="round"
+            ></path>
+        </svg>
+    </button>
+    <div class="mx-auto w-full max-w-md mt-4 mb-8">
+        <article class="prose text-center"><h2>Papan pesan {{user_name}}</h2></article>
+    </div>
+    {{> message message_id=message_id message=message reply=reply message_list=message_list}}
+</div>

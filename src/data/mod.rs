@@ -2,7 +2,7 @@ use eyre::{Error, Result};
 use serde::{Deserialize, Serialize};
 use small_uid::SmallUid;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct Board {
     pub user: String,
     pub id: String,
@@ -10,7 +10,7 @@ pub struct Board {
     pub messages: Vec<Message>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct Message {
     pub board_id: String,
     pub id: String,
@@ -18,28 +18,28 @@ pub struct Message {
     pub reply: Vec<Reply>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct Reply {
     pub message_id: String,
     pub id: String,
     pub reply: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct BoardDB {
     pub user: SmallUid,
     pub id: SmallUid,
     pub name: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct MessageDB {
     pub board_id: SmallUid,
     pub id: SmallUid,
     pub message: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct ReplyDB {
     pub message_id: SmallUid,
     pub id: SmallUid,
@@ -136,8 +136,7 @@ impl TryFrom<Message> for MessageDB {
 }
 
 impl MessageDB {
-    pub fn to_message(&self, replies: Vec<ReplyDB>) -> Message {
-        let replies = replies.into_iter().map(Reply::from).collect();
+    pub fn to_message(&self, replies: Vec<Reply>) -> Message {
         Message {
             board_id: self.board_id.into(),
             id: self.id.into(),

@@ -1,6 +1,6 @@
 [package]
 name = "tanyakah"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 
 [dependencies]
@@ -23,3 +23,4 @@ small_uid = "0.2.0"
 toml = "0.8.19"
 directories = "5.0.1"
 jsonwebtoken = "9.3.0"
+url = "2.5.2"

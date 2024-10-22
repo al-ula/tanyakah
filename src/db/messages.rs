@@ -1,9 +1,10 @@
 use super::{TryGet, DB, MESSAGES, MESSAGES_BY_BOARD};
-use crate::data::MessageDB;
+use crate::data::{Message, MessageDB, Reply};
+use crate::db::replies::{del_reply, get_replies, get_reply_list};
 use bincode::{deserialize, serialize};
 use eyre::{OptionExt, Result};
+use log::info;
 use redb::MultimapValue;
-use crate::db::replies::{del_reply, get_reply_list};
 
 pub fn check_message(message_id: u64) -> Result<()> {
     let db = DB.try_get()?.db.clone();
@@ -78,4 +79,62 @@ pub fn del_message(id: u64) -> Result<()> {
     }
     write_txn.commit()?;
     Ok(())
+}
+
+pub fn full_message(message_id: u64) -> Result<Message> {
+    let replies = get_replies(message_id);
+    let replies = match replies {
+        Ok(replies) => replies.into_iter().map(Reply::from).collect(),
+        Err(e) => {
+            info!("Failed to get replies: {}", e);
+            Vec::new()
+        }
+    };
+    Ok(get_message(message_id)?.to_message(replies))
+}
+
+pub fn full_messages(board_id: u64) -> Result<Vec<Message>> {
+    let mut vec = Vec::new();
+    let messages = get_messages(board_id)?;
+    for message in messages {
+        let replies = match get_replies(message.id.into()) {
+            Ok(replies) => replies.into_iter().map(Reply::from).collect(),
+            Err(e) => {
+                info!("Failed to get replies: {}", e);
+                Vec::new()
+            }
+        };
+        let message = message.to_message(replies);
+        vec.push(message);
+    }
+    Ok(vec)
+}
+
+pub fn full_messages_preview(board_id: u64) -> Result<Vec<Message>> {
+    let mut vec = Vec::new();
+    let messages = get_messages(board_id)?;
+    for message in messages {
+        let replies = match get_replies(message.id.into()) {
+            Ok(replies) => replies.into_iter().map(Reply::from).take(2).collect(),
+            Err(e) => {
+                info!("Failed to get replies: {}", e);
+                Vec::new()
+            }
+        };
+        let message = message.to_message(replies);
+        vec.push(message);
+    }
+    Ok(vec)
+}
+
+pub fn full_message_preview(message_id: u64) -> Result<Message> {
+    let replies = get_replies(message_id);
+    let replies = match replies {
+        Ok(replies) => replies.into_iter().map(Reply::from).take(2).collect(),
+        Err(e) => {
+            info!("Failed to get replies: {}", e);
+            Vec::new()
+        }
+    };
+    Ok(get_message(message_id)?.to_message(replies))
 }
