@@ -9,6 +9,7 @@ use serde::de::value::Error;
 use serde::Deserialize;
 use small_uid::SmallUid;
 use tracing::{info, warn};
+use crate::db::boards::check_board;
 
 #[derive(Debug, Deserialize)]
 struct RegisterForm {
@@ -30,6 +31,11 @@ pub async fn register(req: &mut Request, res: &mut Response) {
                 u => u.to_string(),
             };
             let board = crate::db::create_board(username.clone()).unwrap();
+            if check_board(board.id.0).is_ok() {
+                warn!("register: board already exists");
+                res.status_code(StatusCode::BAD_REQUEST);
+                return;
+            }
             crate::db::register_board(board.clone()).unwrap();
             info!("{}", username);
             info!("{:?}", board);

@@ -10,10 +10,11 @@ WORKDIR /usr/local/bin
 COPY target/x86_64-unknown-linux-musl/release/tanyakah /usr/local/bin
 
 # Copy the necessary directories
-COPY articles /usr/local/bin/articles
-COPY theme/default/static /usr/local/bin/theme/default/static
-COPY theme/default/templates /usr/local/bin/theme/default/templates
-COPY config /usr/local/bin/config
+COPY assets /usr/local/bin/assets
+COPY components /usr/local/bin/components
+
+RUN mkdir -p /root/iisa/tanyakah
+RUN mkdir -p /usr/local/bin/db
 
 # Expose the port your application listens on (change if necessary)
 EXPOSE 8000
