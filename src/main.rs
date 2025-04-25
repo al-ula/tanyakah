@@ -1,6 +1,6 @@
 use crate::config::{Config, CONFIG};
 use crate::db::DB;
-use eyre::{eyre, Report, Result, WrapErr};
+use eyre::{eyre, Result, Report, WrapErr};
 use salvo::prelude::*;
 use salvo::serve_static::StaticDir;
 use small_uid::SmallUid;
@@ -16,7 +16,7 @@ mod render;
 mod routes;
 
 #[tokio::main]
-async fn main() -> Result<(), Report> {
+async fn main() -> Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::try_from_env("TANYAKAH_LOG").unwrap_or(EnvFilter::new("info")))
         .init();
@@ -100,3 +100,5 @@ async fn main() -> Result<(), Report> {
     Server::new(acceptor).serve(router).await;
     Ok(())
 }
+
+

@@ -46,13 +46,13 @@
             </div>
         </div>
     {{/if}}
-    <script>
-        // Trigger HTMX request every 30 seconds
-        setInterval(function() {
-            htmx.ajax('GET', '/msg', {
-                target: '#message-container',
-                swap: 'outerHTML'
-            });
-        }, 120000);
-    </script>
+<!--    <script>-->
+<!--        // Trigger HTMX request every 30 seconds-->
+<!--        setInterval(function() {-->
+<!--            htmx.ajax('GET', '/msg', {-->
+<!--                target: '#message-container',-->
+<!--                swap: 'outerHTML'-->
+<!--            });-->
+<!--        }, 120000);-->
+<!--    </script>-->
 </div>

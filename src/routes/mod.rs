@@ -12,7 +12,7 @@ use std::collections::HashMap;
 use tracing::info;
 
 #[handler]
-pub async fn index(req: &mut Request, response: &mut Response) {
+pub async fn index(req: &mut Request, response: &mut Response){
     if let Some(data) = req.extensions().get::<SimpleAuth>() {
         info!("data: {:#?}", data.clone());
         let board_id: u64 = SmallUid::try_from(data.board.clone()).unwrap().into();
